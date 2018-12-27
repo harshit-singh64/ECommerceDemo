@@ -6,7 +6,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,7 @@ public class UserController {
 	private UserService userService;
 	
 	@PostMapping("/user")
-	public UserDto insertUser(@Valid @RequestBody UserDto userDto) throws CustomException {
+	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException {
 		return userService.insertUser(userDto);
 	}
 	
@@ -38,6 +40,12 @@ public class UserController {
 	@PutMapping("/user")
 	public UserDto updateUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException {
 		return userService.updateUser(userDto);
+	}
+	
+	@DeleteMapping("/user/{id}")
+	public String delete(@PathVariable(value = "id") Integer userId) {
+		userService.delete(userId);
+		return "deleted";
 	}
 	/*@PostMapping("/user")
 	public User createStudent(@RequestBody UserDto user) {

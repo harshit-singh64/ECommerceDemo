@@ -3,13 +3,10 @@ package com.example.demo.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
@@ -18,15 +15,14 @@ import com.example.demo.exception.InvalidInputException;
 import com.example.demo.repo.IUserRepo;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 	@Autowired
 	private IUserRepo userRepo;
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 	
-	public UserDto EntityToDtoAssembler(User user) {
+	public UserDto entityToDtoAssembler(UserDto userDto, User user) {
 		
-		UserDto userDto = new UserDto();
 		userDto.setId(user.getId());
 		userDto.setEmail(user.getEmail());
 		userDto.setName(user.getName());
@@ -36,9 +32,8 @@ public class UserService {
 		return userDto;
 	}
 	
-	public User dtoToEntityAssembler(UserDto userDto) {
-
-		User user = new User();
+	public User dtoToEntityAssembler(UserDto userDto, User user) {
+		
 		user.setEmail(userDto.getEmail());
 		user.setName(userDto.getName());
 		user.setPassword(userDto.getPassword());
@@ -52,18 +47,18 @@ public class UserService {
 			if(userDto.getId() == null) {
 				try {
 				User user = new User();
-				user = dtoToEntityAssembler(userDto);
+				user = dtoToEntityAssembler(userDto, user);
 				userRepo.save(user);
 				userDto.setId(user.getId());
 				
 				logger.info("done>>>>>>>>>>>>");
 				}
 				catch (Exception e) {
-					throw new CustomException(404,"contact number and email id must be unique");
+					throw new CustomException(400,"this contact number and email already exists");
 				}
 			}
 			else {
-				throw new InvalidInputException(404,"you are not allowed to enter ids");
+				throw new InvalidInputException(400,"you are not allowed to enter id");
 			}
 			/*} catch (Exception e) {
 			throw new InvalidInputException("not allowed");
@@ -77,24 +72,31 @@ public class UserService {
 		List<UserDto> userDtoList = new ArrayList<>();
 		
 		for(User user: userList) {
-			UserDto userDto;
-			userDto = EntityToDtoAssembler(user);
+			UserDto userDto = new UserDto();
+			userDto = entityToDtoAssembler(userDto, user);
 			userDtoList.add(userDto);
 		}
 		return userDtoList;
 	}
 	
-	public UserDto updateUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException {
+	/* displaying value by id */
+
+	public UserDto displayById(Integer id) {
+		User user = userRepo.findById(id).get();
+		UserDto userDto = new UserDto();
+		userDto = entityToDtoAssembler(userDto, user);
+		return userDto;
+	}
+
+	/* updating value by id */
+	
+	public UserDto updateUser(UserDto userDto) throws InvalidInputException {
 		try {
 			User user = new User();
-			
 			Integer id = userDto.getId();
-			
 			user = userRepo.findById(id).get();
-			
 			System.out.println(user);
-			
-			user = dtoToEntityAssembler(userDto);
+			user = dtoToEntityAssembler(userDto, user);
 			userRepo.save(user);
 			//userDto.setId(user.getId());
 		} catch (Exception e) {
@@ -103,6 +105,10 @@ public class UserService {
 		return userDto;
 	}
 	
+	public String delete(Integer userId) {
+		userRepo.deleteById(userId);
+		return "user deleted";
+	}
 	/*public User insertStudent(@RequestBody UserDto userDto) {
 		
 		User user = new User();

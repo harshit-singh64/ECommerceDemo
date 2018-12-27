@@ -19,7 +19,7 @@ import com.example.demo.repo.IRoleRepo;
 import com.example.demo.repo.IUserRepo;
 
 @Service
-public class RoleService {
+public class RoleService implements IRoleService{
 	
 	@Autowired
 	private IRoleRepo roleRepo;
