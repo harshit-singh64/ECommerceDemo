@@ -37,6 +37,11 @@ public class UserController {
 		return userService.displayAllUsers();
 	}
 	
+	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserDto getStudentById(@PathVariable(value = "id") @Valid Integer userId) {
+		return userService.displayById(userId);
+	}
+	
 	@PutMapping("/user")
 	public UserDto updateUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException {
 		return userService.updateUser(userDto);

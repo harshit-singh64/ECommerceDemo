@@ -2,21 +2,13 @@ package com.example.demo.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.dto.RoleDto;
-import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
 import com.example.demo.repo.IRoleRepo;
-import com.example.demo.repo.IUserRepo;
 
 @Service
 public class RoleService implements IRoleService{
