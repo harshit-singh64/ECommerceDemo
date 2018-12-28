@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.example.demo.dto.RoleDto;
-import com.example.demo.dto.UserDto;
 import com.example.demo.service.RoleService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

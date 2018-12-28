@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,13 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	@GetMapping("/userActive/{id}")
+	public String activeUser(@PathVariable(value = "id") Integer userId)
+	{
+		userService.activation(userId);
+		return "Your Account is Activated !!!";
+	}
+	
 	@PostMapping("/user")
 	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException {
 		return userService.insertUser(userDto);
@@ -37,13 +45,37 @@ public class UserController {
 	}
 	
 	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserDto getStudentById(@PathVariable(value = "id") @Valid Integer userId) {
-		return userService.displayById(userId);
+	public UserDto getStudentById(@PathVariable(value = "id") @Valid Integer userId, 
+			@RequestHeader(value = "userName") String userName,
+			@RequestHeader(value = "password") String password) throws CustomException {
+		UserDto userDto = new UserDto();
+		Boolean loginSuccess = userService.login(userName, password,userId);
+		
+		if (loginSuccess == true) {
+			userDto=userService.displayById(userId);
+		}
+		else{
+			throw new CustomException("Login Error");
+		}
+		return userDto;
+		//return userService.displayById(userId);
 	}
 	
 	@PutMapping("/user")
-	public UserDto updateUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException {
-		return userService.updateUser(userDto);
+	public UserDto updateUser(@RequestBody @Valid UserDto userDto,
+			@RequestHeader(value = "userName") String userName,
+			@RequestHeader(value = "password") String password) throws InvalidInputException, CustomException {
+		
+		Integer id = userDto.getId();
+		Boolean loginSuccess = userService.login(userName, password,id);
+		if (loginSuccess == true) {
+			userDto = userService.updateUser(userDto);
+			}
+		else {
+			throw new CustomException("Login Error");
+			}
+		return userDto;
+		//return userService.updateUser(userDto);
 	}
 	
 	@DeleteMapping("/user/{id}")

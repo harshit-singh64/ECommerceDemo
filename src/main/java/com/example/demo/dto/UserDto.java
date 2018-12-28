@@ -25,7 +25,7 @@ public class UserDto {
 	@Pattern(regexp="(^[1-9]{1}[0-9]{9}$)|(^$)",message="Invalid Phone Number format")
     private String phoneNumber;
 	
-	@NotNull(message="password cannot be null")
+	//@NotNull(message="password cannot be null")
 	@Size(min=2, max=50)
 	private String password;
 	
@@ -39,7 +39,7 @@ public class UserDto {
 	public UserDto(Integer id, @NotNull(message = "Name cannot be null") @Size(min = 2, max = 50) String name,
 			@NotNull(message = "email cannot be null") @Email String email,
 			@NotNull(message = "contact number cannot be null") @Min(10) @Max(10) String phoneNumber,
-			@NotNull(message = "password cannot be null") String password, RoleDto roleDto) {
+			String password, RoleDto roleDto) {
 		super();
 		this.id = id;
 		this.name = name;

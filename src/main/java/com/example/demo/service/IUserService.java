@@ -15,4 +15,5 @@ public interface IUserService {
 	List<UserDto> displayAllUsers();
 	UserDto updateUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException;
 	String delete(Integer userId);
+	Boolean login(String userName, String password, Integer id) throws CustomException;
 }
