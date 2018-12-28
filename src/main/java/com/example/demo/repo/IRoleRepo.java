@@ -7,6 +7,4 @@ import com.example.demo.entity.Role;
 
 @Repository
 public interface IRoleRepo extends JpaRepository<Role, Integer>{
-
-	
 }

@@ -42,21 +42,23 @@ public class UserService implements IUserService {
 		return user;
 	}
 	
+	/*inserting value*/
+	
 	public UserDto insertUser(UserDto userDto) throws InvalidInputException, CustomException {
 		//try {
 			if(userDto.getId() == null) {
 				try {
-				User user = new User();
-				user = dtoToEntityAssembler(userDto, user);
-				userRepo.save(user);
-				userDto.setId(user.getId());
-				
-				logger.info("done>>>>>>>>>>>>");
-				}
-				catch (Exception e) {
+					User user = new User();
+					user = dtoToEntityAssembler(userDto, user);
+					
+					userRepo.save(user);
+					userDto.setId(user.getId());
+					
+					logger.info("done>>>>>>>>>>>>");
+					} catch (Exception e) {
 					throw new CustomException(400,"this contact number and email already exists");
+					}
 				}
-			}
 			else {
 				throw new InvalidInputException(400,"you are not allowed to enter id");
 			}
@@ -65,6 +67,8 @@ public class UserService implements IUserService {
 		}*/
 		return userDto;
 	}
+	
+	/*display all values*/
 	
 	public List<UserDto> displayAllUsers() {
 		
@@ -105,10 +109,13 @@ public class UserService implements IUserService {
 		return userDto;
 	}
 	
+	/*delete value by id*/
+	
 	public String delete(Integer userId) {
 		userRepo.deleteById(userId);
 		return "user deleted";
 	}
+	
 	/*public User insertStudent(@RequestBody UserDto userDto) {
 		
 		User user = new User();

@@ -1,18 +1,20 @@
 package com.example.demo.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class RoleDto {
-	@NotNull
 	private Integer id;
-	@NotNull
-	private String name;
 	
+	@NotNull(message="name cannot be null")
+	@Size(min=2, max=50)
+	private String name;
+
 	public RoleDto() {
 		super();
 	}
 
-	public RoleDto(@NotNull Integer id, @NotNull String name) {
+	public RoleDto(Integer id, @NotNull(message = "name cannot be null") @Size(min = 2, max = 50) String name) {
 		super();
 		this.id = id;
 		this.name = name;
