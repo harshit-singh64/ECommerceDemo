@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -20,22 +21,28 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.service.UserService;
+import com.example.demo.util.EmailSender;
+import com.example.demo.util.Login;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private EmailSender emailSender;
+	@Autowired
+	private Login loginClass;
 	
 	@GetMapping("/userActive/{id}")
 	public String activeUser(@PathVariable(value = "id") Integer userId)
 	{
-		userService.activation(userId);
+		emailSender.activation(userId);
 		return "Your Account is Activated !!!";
 	}
 	
 	@PostMapping("/user")
-	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException {
+	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException, UnsupportedEncodingException {
 		return userService.insertUser(userDto);
 	}
 	
@@ -49,7 +56,7 @@ public class UserController {
 			@RequestHeader(value = "userName") String userName,
 			@RequestHeader(value = "password") String password) throws CustomException {
 		UserDto userDto = new UserDto();
-		Boolean loginSuccess = userService.login(userName, password,userId);
+		Boolean loginSuccess = loginClass.login(userName, password,userId);
 		
 		if (loginSuccess == true) {
 			userDto=userService.displayById(userId);
@@ -67,7 +74,7 @@ public class UserController {
 			@RequestHeader(value = "password") String password) throws InvalidInputException, CustomException {
 		
 		Integer id = userDto.getId();
-		Boolean loginSuccess = userService.login(userName, password,id);
+		Boolean loginSuccess = loginClass.login(userName, password,id);
 		if (loginSuccess == true) {
 			userDto = userService.updateUser(userDto);
 			}
