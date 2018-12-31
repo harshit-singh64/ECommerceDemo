@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class UserService implements IUserService {
 	private IUserRepo userRepo;
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Value("${spring.mail.username}")
+	private String emailFrom;
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 	
@@ -61,7 +66,7 @@ public class UserService implements IUserService {
 	
 	/*sending email*/
 	
-	public void sendMail(String userName, String password, String name, Integer id) {
+	public void sendMail(String userName, String password, String name, Integer id) throws UnsupportedEncodingException {
 		
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -75,6 +80,7 @@ public class UserService implements IUserService {
 					+ "<br><br>        Username is :   " + userName + "<br><br>        Password is :   " + password
 					+ "<br><br><body><a href=http://localhost:8081/api/activateAccount/"+id+">Click here to Activate Your Account</a></body>", "text/html");
 			helper.setTo(userName);
+			helper.setFrom(new InternetAddress(emailFrom,"E-Commerce"));
 			helper.setSubject("E-Commerce Registration");
 
 		} catch (MessagingException e) {
