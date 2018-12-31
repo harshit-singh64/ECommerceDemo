@@ -7934,3 +7934,13 @@ java.util.NoSuchElementException: No value present
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-8.5.34.jar:8.5.34]
 	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
 
+<<<<<<< HEAD
+=======
+2018-12-31 14:03:40.361  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-12-31 14:03:40.361  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] ConfigServletWebServerApplicationContext : Closing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@31d7b7bf: startup date [Mon Dec 31 13:51:14 IST 2018]; root of context hierarchy
+2018-12-31 14:03:40.363  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-12-31 14:03:40.364  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans
+2018-12-31 14:03:40.366  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2018-12-31 14:03:40.367  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2018-12-31 14:03:40.371  INFO 5496 --- [RMI TCP Connection(2)-172.18.73.24] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+>>>>>>> log file added
