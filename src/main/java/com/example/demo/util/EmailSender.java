@@ -51,6 +51,8 @@ public class EmailSender {
 		System.out.println("Mail Sent Successfully!");
 	}
 	
+	
+	
 	/*account activation*/
 	
 	public void activation(Integer id) {
