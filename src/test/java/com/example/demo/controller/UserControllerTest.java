@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.service.UserService;
+import com.example.demo.util.EmailSender;
+import com.example.demo.util.Login;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,6 +34,10 @@ public class UserControllerTest {
 	private MockMvc mockMvc;
 	@MockBean
 	private UserService userService;
+	@MockBean
+	private EmailSender emailSender;
+	@MockBean
+	private Login login;
 	
 	/*@Before
     public void setUp() throws Exception {
