@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
+import com.example.demo.login.Login;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.UserService;
-import com.example.demo.util.EmailSender;
-import com.example.demo.util.Login;
 
 @RestController
 @RequestMapping("/api")
@@ -30,14 +30,14 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private EmailSender emailSender;
+	private EmailService emailService;
 	@Autowired
 	private Login loginClass;
 	
 	@GetMapping("/userActive/{id}")
 	public String activeUser(@PathVariable(value = "id") Integer userId)
 	{
-		emailSender.activation(userId);
+		emailService.activation(userId);
 		return "Your Account is Activated !!!";
 	}
 	

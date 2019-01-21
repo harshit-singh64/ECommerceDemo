@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.example.demo.dto.UserDto;
+import com.example.demo.login.Login;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.UserService;
-import com.example.demo.util.EmailSender;
-import com.example.demo.util.Login;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +35,7 @@ public class UserControllerTest {
 	@MockBean
 	private UserService userService;
 	@MockBean
-	private EmailSender emailSender;
+	private EmailService emailService;
 	@MockBean
 	private Login login;
 	

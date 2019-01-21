@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,20 +9,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+//import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.RoleDto;
 import com.example.demo.dto.UserDto;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.repo.IUserRepo;
-import com.example.demo.util.EmailSender;
 
 @Service
-public class UserService implements IUserService {
+public class UserService implements UserDetailsService {
+	@Autowired
+	private BCryptPasswordEncoder encoder;
 	@Autowired
 	private IUserRepo userRepo;
 	@Autowired
-	private EmailSender emailSender;
+	private EmailService emailService;
+	@Autowired
+	private RoleService roleService;
 	
 	@Value("${spring.mail.username}")
 	private String emailFrom;
@@ -29,45 +42,97 @@ public class UserService implements IUserService {
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 	
 	public UserDto entityToDtoAssembler(UserDto userDto, User user) {
-		
 		userDto.setId(user.getId());
-		userDto.setEmail(user.getEmail());
 		userDto.setName(user.getName());
+		userDto.setEmail(user.getEmail());
 		userDto.setPassword(user.getPassword());
 		userDto.setPhoneNumber(user.getPhoneNumber());
+		userDto.setRoleDto(entityToDtoListAssembler(userDto, user));
 
 		return userDto;
 	}
 	
+	public List<RoleDto> entityToDtoListAssembler(UserDto userDto, User user) {
+		List<Role> roleList = user.getRole();
+		List<RoleDto> roleDtoList = new ArrayList<>();
+				
+		for(Role role: roleList) {
+			RoleDto roleDto = new RoleDto();
+			roleDto = roleService.entityToDtoAssembler(roleDto, role);
+			roleDtoList.add(roleDto);
+		}
+		return roleDtoList;
+	}
+	
 	public User dtoToEntityAssembler(UserDto userDto, User user) {
-		
 		user.setEmail(userDto.getEmail());
 		user.setName(userDto.getName());
 		user.setPassword(userDto.getPassword());
 		user.setPhoneNumber(userDto.getPhoneNumber());
+		user.setRole(dtoToEntityListAssembler(userDto, user));
 
 		return user;
 	}
+	
+	public List<Role> dtoToEntityListAssembler(UserDto userDto, User user) {
+		List<RoleDto> roleDtoList = userDto.getRoleDto();
+		List<Role> roleList = new ArrayList<>();
+				
+		for(RoleDto roleDto: roleDtoList) {
+			Role role = new Role();
+			role = roleService.dtoToEntityAssembler(roleDto, role);
+			roleList.add(role);
+		}
+		return roleList;
+	}
+	
 	
 	/*inserting value*/
 	
 	public UserDto insertUser(UserDto userDto) throws InvalidInputException {
 		//try {
 		User user = new User();
+		//Role role = new Role();
 			if(userDto.getId() == null && userDto.getPassword() == null) {
 					try {
 						userDto.setPassword(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8));
+						
+						System.out.println(userDto);
+						
+						/*
+						List<RoleDto> roleDtoList = new ArrayList<>();
+						List<Role> roleList = new ArrayList<>();
+						roleDtoList = userDto.getRoleDto();
+						
+						System.out.println(roleDtoList);
+						
+						for(RoleDto roleDto: roleDtoList) {
+							Role role = new Role();
+							role = roleService.dtoToEntityAssembler(roleDto, role);
+							roleList.add(role);
+						}
+						
+						System.out.println(roleList);*/
+						
+						System.out.println(user);
+						
+						
+						
+						
 						user = dtoToEntityAssembler(userDto, user);
+						
+						System.out.println(user);
+						
 						userRepo.save(user);
 						
-						emailSender.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
+						emailService.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
 						
 						userDto.setId(user.getId());
 						
 						logger.info("done>>>>>>>>>>>>");
 					} catch (Exception e) {
 						e.printStackTrace();
-						throw new InvalidInputException(400,"this contact number and email already exists");
+						throw new InvalidInputException(400,e.toString());
 					}
 				/*try {
 					User user = new User();
@@ -94,10 +159,10 @@ public class UserService implements IUserService {
 	/*display all values*/
 	
 	public List<UserDto> displayAllUsers() {
-		
 		List<User> userList = userRepo.findAll();
 		List<UserDto> userDtoList = new ArrayList<>();
-		
+		//List<Role> roleList 
+				
 		for(User user: userList) {
 			UserDto userDto = new UserDto();
 			userDto = entityToDtoAssembler(userDto, user);
@@ -136,6 +201,81 @@ public class UserService implements IUserService {
 	public String delete(Integer userId) {
 		userRepo.deleteById(userId);
 		return "user deleted";
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// hard coding the users. All passwords must be encoded.
+				final List<AppUser> users = Arrays.asList(
+					new AppUser (1, "omar", encoder.encode("12345"), "USER"),
+					new AppUser (2, "admin", encoder.encode("12345"), "ADMIN")
+				);
+				
+				for(AppUser user: users) {
+					if(user.getUsername().equals(username)) {
+						
+						// Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
+						// So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
+						List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+				                	.commaSeparatedStringToAuthorityList("ROLE_" + user.getRole());
+						
+						// The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
+						// And used by auth manager to verify and check user authentication.
+						return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
+					}
+				}
+				
+				// If user not found. Throw this exception.
+				throw new UsernameNotFoundException("Username: " + username + " not found");
+	
+		//return null;
+	}
+	
+	private static class AppUser {
+		private Integer id;
+	    	private String username, password;
+	    	private String role;
+	    
+		public AppUser(Integer id, String username, String password, String role) {
+	    		this.id = id;
+	    		this.username = username;
+	    		this.password = password;
+	    		this.role = role;
+	    	}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public void setId(Integer id) {
+			this.id = id;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+		public String getRole() {
+			return role;
+		}
+
+		public void setRole(String role) {
+			this.role = role;
+		}
+
+		
 	}
 	
 	/*public User insertStudent(@RequestBody UserDto userDto) {

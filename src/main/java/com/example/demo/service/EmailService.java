@@ -1,4 +1,4 @@
-package com.example.demo.util;
+package com.example.demo.service;
 
 import java.io.UnsupportedEncodingException;
 
@@ -16,7 +16,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repo.IUserRepo;
 
 @Component
-public class EmailSender {
+public class EmailService {
 	@Autowired
 	private IUserRepo userRepo;
 	@Autowired

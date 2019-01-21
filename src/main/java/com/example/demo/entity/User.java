@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,13 +20,26 @@ public class User {
 	private String email;
 	private String phoneNumber;
 	private String password;
+	private String assignedRole;
 	
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	List<Role> role = new ArrayList<Role>();
 	
 	public User() {
 		super();
 	}
+	
+	
+	
+	public User(Integer id, String email, String password, String assignedRole) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.password = password;
+		this.assignedRole = assignedRole;
+	}
+
+
 
 	public User(Integer id, String name, String email, String phoneNumber, String password, List<Role> role) {
 		super();
@@ -76,6 +90,18 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public String getAssignedRole() {
+		return assignedRole;
+	}
+
+
+
+	public void setAssignedRole(String assignedRole) {
+		this.assignedRole = assignedRole;
+	}
+
+
 
 	public List<Role> getRole() {
 		return role;
