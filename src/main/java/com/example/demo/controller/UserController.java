@@ -1,12 +1,16 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.time.LocalDateTime;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,20 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
+import com.example.demo.exception.ExceptionResponse;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.login.Login;
 import com.example.demo.service.EmailService;
-import com.example.demo.service.UserService;
+import com.example.demo.service.IUserService;
+
+import redis.clients.jedis.Jedis;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
 	@Autowired
-	private UserService userService;
+	private IUserService userService;
 	@Autowired
 	private EmailService emailService;
 	@Autowired
 	private Login loginClass;
+	
+	//private ExceptionResponse error = new ExceptionResponse();
+	
+	private Jedis jedis = new Jedis("127.0.0.1", 6379);
 	
 	@GetMapping("/userActive/{id}")
 	public String activeUser(@PathVariable(value = "id") Integer userId)
@@ -47,9 +58,24 @@ public class UserController {
 	}
 	
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<UserDto> getAllStudents() {
-		return userService.displayAllUsers();
-	}
+	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) {
+		String token= httpServletRequest.getHeader("Authorization");
+		
+		System.out.println("token " + token);
+		
+		String username = jedis.get(token);
+		
+		System.out.println("username " + username);
+		if(username!=null) {
+			HttpHeaders responseHeader = new HttpHeaders();
+			return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
+			}
+		else{
+			ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
+					exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
+			return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);
+			}
+		}
 	
 	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserDto getStudentById(@PathVariable(value = "id") @Valid Integer userId, 

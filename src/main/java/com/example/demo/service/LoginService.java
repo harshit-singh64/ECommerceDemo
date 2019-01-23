@@ -1,18 +1,27 @@
-package com.example.demo.login;
+package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
-import com.example.demo.exception.InvalidInputException;
 import com.example.demo.repo.IUserRepo;
 
 @Service
-public class LoginService {
+public class LoginService implements ILoginService {
 	@Autowired
 	private IUserRepo userRepo;
+	@Autowired
+	private UserService userService;
 	
-	public Boolean login(String userName, String password) throws InvalidInputException {
+	public UserDto login(String username, String password) {
+		User user = userRepo.findByEmailAndPassword(username, password);
+		UserDto userDto = new UserDto();
+		userDto = userService.entityToDtoAssembler(userDto, user);
+		return userDto;
+	}
+	
+	/*public Boolean login(String userName, String password) throws InvalidInputException {
 		Boolean loginSuccess = false;
 		try {
 			User user = userRepo.findByEmail(userName).get();
@@ -33,7 +42,7 @@ public class LoginService {
 		}
 		
 		return loginSuccess;
-		}
+		}*/
 	
 	/*@Cacheable("student")
 	public String loginSucess(Integer id) {

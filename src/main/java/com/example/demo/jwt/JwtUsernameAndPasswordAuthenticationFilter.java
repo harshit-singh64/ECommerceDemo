@@ -1,4 +1,4 @@
-package com.example.demo.jwt;
+/*package com.example.demo.jwt;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -82,3 +82,4 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 			response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
 		}
 }
+*/

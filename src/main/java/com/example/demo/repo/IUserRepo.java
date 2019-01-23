@@ -11,4 +11,6 @@ import com.example.demo.entity.User;
 public interface IUserRepo extends JpaRepository<User, Integer> {
 
 	Optional<User> findByEmail(String userName);
+
+	User findByEmailAndPassword(String username, String password);
 }

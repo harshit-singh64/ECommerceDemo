@@ -1,4 +1,4 @@
-package com.example.demo.jwt;
+/*package com.example.demo.jwt;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,3 +43,4 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
     	   return new JwtConfig();
   	}
 	}
+*/

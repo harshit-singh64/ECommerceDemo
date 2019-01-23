@@ -1,4 +1,4 @@
-package com.example.demo.jwt;
+/*package com.example.demo.jwt;
 
 public class JwtConfig {
 	private String uri;
@@ -40,3 +40,4 @@ public class JwtConfig {
 	
 	
 }
+*/

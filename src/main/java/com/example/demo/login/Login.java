@@ -13,8 +13,6 @@ public class Login {
 	@Autowired
 	private IUserRepo userRepo;
 	
-	/*login*/
-	
 	public Boolean login(String userName, String password, Integer id) throws CustomException {
 		Boolean loginSuccess = false;
 		User user = userRepo.findById(id).get();

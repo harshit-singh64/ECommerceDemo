@@ -1,4 +1,4 @@
-package com.example.demo.redisConfig;
+/*package com.example.demo.redisConfig;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -38,7 +38,7 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
 	    return redisTemplate;
 	  }
 	  
-	  /* 
+	   
 	  @Bean
 	 public CacheManager cacheManager(RedisTemplate redisTemplate) {
 	    RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
@@ -46,5 +46,5 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
 	    // Number of seconds before expiration. Defaults to unlimited (0)
 	    cacheManager.setDefaultExpiration(300);
 	    return cacheManager;
-	  }*/
-}
+	  }
+}*/

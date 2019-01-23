@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,13 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-//import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.RoleDto;
@@ -26,9 +18,9 @@ import com.example.demo.exception.InvalidInputException;
 import com.example.demo.repo.IUserRepo;
 
 @Service
-public class UserService implements UserDetailsService {
-	@Autowired
-	private BCryptPasswordEncoder encoder;
+public class UserService implements IUserService {
+	/*@Autowired
+	private BCryptPasswordEncoder encoder;*/
 	@Autowired
 	private IUserRepo userRepo;
 	@Autowired
@@ -65,6 +57,7 @@ public class UserService implements UserDetailsService {
 	}
 	
 	public User dtoToEntityAssembler(UserDto userDto, User user) {
+		user.setId(userDto.getId());
 		user.setEmail(userDto.getEmail());
 		user.setName(userDto.getName());
 		user.setPassword(userDto.getPassword());
@@ -203,7 +196,7 @@ public class UserService implements UserDetailsService {
 		return "user deleted";
 	}
 
-	@Override
+	/*@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// hard coding the users. All passwords must be encoded.
 				final List<AppUser> users = Arrays.asList(
@@ -229,9 +222,9 @@ public class UserService implements UserDetailsService {
 				throw new UsernameNotFoundException("Username: " + username + " not found");
 	
 		//return null;
-	}
+	}*/
 	
-	private static class AppUser {
+	/*private static class AppUser {
 		private Integer id;
 	    	private String username, password;
 	    	private String role;
@@ -276,7 +269,7 @@ public class UserService implements UserDetailsService {
 		}
 
 		
-	}
+	}*/
 	
 	/*public User insertStudent(@RequestBody UserDto userDto) {
 		

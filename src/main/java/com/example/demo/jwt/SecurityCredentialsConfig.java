@@ -1,4 +1,4 @@
-package com.example.demo.jwt;
+/*package com.example.demo.jwt;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,3 +63,4 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
 	    return new BCryptPasswordEncoder();
 	}
 }
+*/
