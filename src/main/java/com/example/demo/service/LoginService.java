@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
+import com.example.demo.exception.CustomException;
 import com.example.demo.repo.IUserRepo;
 
 @Service
@@ -12,14 +13,24 @@ public class LoginService implements ILoginService {
 	@Autowired
 	private IUserRepo userRepo;
 	@Autowired
-	private UserService userService;
+	private IUserService userService;
 	
-	public UserDto login(String username, String password) {
-		User user = userRepo.findByEmailAndPassword(username, password);
+	public UserDto login(String userName, String password) throws CustomException {
 		UserDto userDto = new UserDto();
-		userDto = userService.entityToDtoAssembler(userDto, user);
+		try {
+			User user = userRepo.findByEmail(userName);
+			if (userName.equals(user.getEmail()) && password.equals(user.getPassword())) {
+				userDto = userService.entityToDtoAssembler(userDto, user);
+				//System.out.println(userDto);
+				} 
+			else {
+				throw new CustomException(500,"Login not successfull");
+				}
+			} catch (Exception e) {
+				throw new CustomException(400,"(from service) Login userName does not exists");
+				}
 		return userDto;
-	}
+		}
 	
 	/*public Boolean login(String userName, String password) throws InvalidInputException {
 		Boolean loginSuccess = false;

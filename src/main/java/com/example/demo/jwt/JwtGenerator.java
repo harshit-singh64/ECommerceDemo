@@ -23,14 +23,14 @@ public class JwtGenerator {
 		user = userService.dtoToEntityAssembler(userDto, user);
 		Date date = new Date();
 		long time = date.getTime();
-		Date expirationTime = new Date(time + 5000l);//5 seconds
+		Date expirationTime = new Date(time + 5l);//5 seconds
 		
 		Claims claims=Jwts.claims().setSubject(user.getEmail());
 		claims.put("id",user.getId().toString());
 		claims.put("password", user.getPassword());
 		claims.setExpiration(expirationTime);
 		
-		return Jwts.builder().setClaims(claims)
+		return Jwts.builder().setClaims(claims).setExpiration(expirationTime)
 				.signWith(SignatureAlgorithm.HS512, "my-secret-token-to-change-in-production")
 				.compact();
 		}

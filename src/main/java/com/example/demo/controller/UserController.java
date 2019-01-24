@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
-import com.example.demo.exception.ExceptionResponse;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.login.Login;
+import com.example.demo.security.AuthorizationByRole;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.IUserService;
 
@@ -40,7 +39,8 @@ public class UserController {
 	private EmailService emailService;
 	@Autowired
 	private Login loginClass;
-	
+	@Autowired
+	private AuthorizationByRole authorizationByRole;
 	//private ExceptionResponse error = new ExceptionResponse();
 	
 	private Jedis jedis = new Jedis("127.0.0.1", 6379);
@@ -58,22 +58,38 @@ public class UserController {
 	}
 	
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) {
+	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) throws CustomException {
 		String token= httpServletRequest.getHeader("Authorization");
 		
 		System.out.println("token " + token);
 		
-		String username = jedis.get(token);
-		
-		System.out.println("username " + username);
-		if(username!=null) {
-			HttpHeaders responseHeader = new HttpHeaders();
-			return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
+		try {
+			String username = jedis.get(token);
+			System.out.println("username " + username);
+			
+			if(username != null) {
+				boolean authority = authorizationByRole.authorizationOfUser(username);
+				System.out.println("authority " + authority);
+				if(authority == true) {
+					HttpHeaders responseHeader = new HttpHeaders();
+					return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
+				}
+				else {
+					//HttpHeaders responseHeader = new HttpHeaders();
+					//return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
+					throw new CustomException(400,"not allowed");
+				}
+				
+				}
+			else {
+				throw new CustomException(400,"wrong token");
 			}
-		else{
-			ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
-					exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
-			return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);
+			/*ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
+			exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
+			return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CustomException(400,e.toString()+"from user controller");
 			}
 		}
 	

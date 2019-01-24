@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.UserDto;
-import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.CustomException;
 
 public interface ILoginService {
-	UserDto login(String username, String password);
+	UserDto login(String userName, String password) throws CustomException;
 }

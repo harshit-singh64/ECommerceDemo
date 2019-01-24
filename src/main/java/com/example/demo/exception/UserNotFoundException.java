@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class UserNotFoundException {
-	private static final long serialVersionUID = 1L;
-	
 	private Integer code;
 	private String message;
 	
