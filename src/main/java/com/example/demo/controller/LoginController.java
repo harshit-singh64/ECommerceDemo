@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
-import com.example.demo.jwt.JwtGenerator;
+import com.example.demo.jwt.JwtTokenGenerator;
 import com.example.demo.login.LoginResponse;
 import com.example.demo.login.UserCredentials;
 import com.example.demo.service.ILoginService;
@@ -26,7 +26,7 @@ public class LoginController {
 	@Autowired
 	private ILoginService loginService;
 	@Autowired
-	private JwtGenerator jwtGenerator;
+	private JwtTokenGenerator jwtTokenGenerator;
 	
 	Jedis jedis = new Jedis("127.0.0.1", 6379);//"127.0.0.1", 6379
 	
@@ -37,9 +37,11 @@ public class LoginController {
 		UserDto userDto = new UserDto();
 		
 		try {
+			System.out.println(userCredentials.getUsername()+"=========="+ userCredentials.getPassword());
 			userDto = loginService.login(userCredentials.getUsername(), userCredentials.getPassword());
+			
 			if(userDto != null) {
-				String token = jwtGenerator.tokenGenerator(userDto);
+				String token = jwtTokenGenerator.tokenGenerator(userDto);
 				
 				jedis.set(token, userCredentials.getUsername());
 				//System.out.println(token);
@@ -48,6 +50,7 @@ public class LoginController {
 				loginResponse.setStatus(HttpStatus.CREATED.toString());
 				loginResponse.setToken(token);
 				loginResponse.setMessage(HttpStatus.OK.toString());
+				System.out.println("login sucess");
 				}
 			/*else {
 				loginResponse.setToken("Please check your credentials");
@@ -55,8 +58,8 @@ public class LoginController {
 				System.out.println("else block : " + HttpStatus.UNAUTHORIZED.toString());
 				}*/
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new CustomException(400,"(from controller) Login userName does not exists");
+				//e.printStackTrace();
+				throw new CustomException(400,e.toString()+"from login controller");
 				
 				/*loginResponse.setToken(null);
 				loginResponse.setMessage("Please check your credentials");

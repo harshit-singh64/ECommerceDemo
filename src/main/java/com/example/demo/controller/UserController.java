@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.UserDto;
 import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
+import com.example.demo.jwt.JwtTokenDecoder;
 import com.example.demo.login.Login;
 import com.example.demo.security.AuthorizationByRole;
 import com.example.demo.service.EmailService;
@@ -41,56 +42,65 @@ public class UserController {
 	private Login loginClass;
 	@Autowired
 	private AuthorizationByRole authorizationByRole;
+	@Autowired
+	private JwtTokenDecoder jwtTokenDecoder;
 	//private ExceptionResponse error = new ExceptionResponse();
 	
 	private Jedis jedis = new Jedis("127.0.0.1", 6379);
 	
 	@GetMapping("/userActive/{id}")
-	public String activeUser(@PathVariable(value = "id") Integer userId)
-	{
+	public String activeUser(@PathVariable(value = "id") Integer userId) {
 		emailService.activation(userId);
 		return "Your Account is Activated !!!";
-	}
+		}
 	
 	@PostMapping("/user")
-	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException, UnsupportedEncodingException {
+	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException, 
+	UnsupportedEncodingException {
 		return userService.insertUser(userDto);
-	}
+		}
 	
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) throws CustomException {
-		String token= httpServletRequest.getHeader("Authorization");
-		
+		String token = httpServletRequest.getHeader("Authorization");
 		System.out.println("token " + token);
 		
 		try {
 			String username = jedis.get(token);
-			System.out.println("username " + username);
+			//String username = jedis.get(token);
 			
 			if(username != null) {
-				boolean authority = authorizationByRole.authorizationOfUser(username);
-				System.out.println("authority " + authority);
-				if(authority == true) {
+				System.out.println("username " + username);
+				UserDto userDto =new UserDto();
+				
+				userDto = jwtTokenDecoder.tokenDecoder(token);
+				System.out.println("token decoder values " + userDto);
+				
+				//boolean authority = authorizationByRole.authorizationOfUser(username);
+				//System.out.println("authority " + authority);
+				
+				if(userDto.getRoleDto().get(0).getName().equals("Admin")) {
 					HttpHeaders responseHeader = new HttpHeaders();
 					return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
-				}
+					}
 				else {
-					//HttpHeaders responseHeader = new HttpHeaders();
-					//return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
 					throw new CustomException(400,"not allowed");
-				}
-				
+					}
 				}
 			else {
-				throw new CustomException(400,"wrong token");
-			}
-			/*ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
-			exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
-			return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);*/
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new CustomException(400,e.toString()+"from user controller");
-			}
+				throw new CustomException(400,"invalid token input");
+				}
+			} catch (Exception e) {
+				//e.printStackTrace();
+				throw new CustomException(400,e.toString()+" from user controller");
+				}
+		/*ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
+		 * exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
+		 * return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);*/
+		
+		/*UserDto userDto =new UserDto();
+		userDto = jwtTokenDecoder.tokenDecoder(token);
+		System.out.println("token decoder values " + userDto);*/
 		}
 	
 	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

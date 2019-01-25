@@ -17,20 +17,24 @@ public class LoginService implements ILoginService {
 	
 	public UserDto login(String userName, String password) throws CustomException {
 		UserDto userDto = new UserDto();
+		User user = new User();
 		try {
-			User user = userRepo.findByEmail(userName);
+			user = userRepo.findByEmail(userName);
+			System.out.println("user "+user);
+			
+			//System.out.println(user);
 			if (userName.equals(user.getEmail()) && password.equals(user.getPassword())) {
 				userDto = userService.entityToDtoAssembler(userDto, user);
+				return userDto;
 				//System.out.println(userDto);
 				} 
 			else {
 				throw new CustomException(500,"Login not successfull");
 				}
-			} catch (Exception e) {
-				throw new CustomException(400,"(from service) Login userName does not exists");
-				}
-		return userDto;
-		}
+		} catch (Exception e) {
+			throw new CustomException(400,"email does not exists");
+			}
+			}
 	
 	/*public Boolean login(String userName, String password) throws InvalidInputException {
 		Boolean loginSuccess = false;
