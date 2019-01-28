@@ -29,12 +29,11 @@ public class RoleService implements IRoleService{
 	}
 	
 	public Role dtoToEntityAssembler(RoleDto roleDto, Role role) {
+		role.setId(roleDto.getId());
 		role.setName(roleDto.getName());
 		//role.setUser(roleDto.getUserDto());
 		return role;
 	}
-	
-
 	
 	/*inserting value*/
 	

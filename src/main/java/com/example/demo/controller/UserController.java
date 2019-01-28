@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -25,7 +27,6 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.jwt.JwtTokenDecoder;
 import com.example.demo.login.Login;
-import com.example.demo.security.AuthorizationByRole;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.IUserService;
 
@@ -40,8 +41,6 @@ public class UserController {
 	private EmailService emailService;
 	@Autowired
 	private Login loginClass;
-	@Autowired
-	private AuthorizationByRole authorizationByRole;
 	@Autowired
 	private JwtTokenDecoder jwtTokenDecoder;
 	//private ExceptionResponse error = new ExceptionResponse();
@@ -60,26 +59,28 @@ public class UserController {
 		return userService.insertUser(userDto);
 		}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) throws CustomException {
-		String token = httpServletRequest.getHeader("Authorization");
-		System.out.println("token " + token);
-		
 		try {
+			String token = httpServletRequest.getHeader("Authorization");
+			System.out.println("token " + token);
 			String username = jedis.get(token);
+			System.out.println("username " + username);
 			//String username = jedis.get(token);
 			
 			if(username != null) {
 				System.out.println("username " + username);
 				UserDto userDto =new UserDto();
-				
 				userDto = jwtTokenDecoder.tokenDecoder(token);
+				
 				System.out.println("token decoder values " + userDto);
 				
-				//boolean authority = authorizationByRole.authorizationOfUser(username);
-				//System.out.println("authority " + authority);
+				ArrayList roleNameList = (ArrayList) userDto.getRoleDto();
+				LinkedHashMap<Object, Object> roleNameMap = (LinkedHashMap<Object, Object>) roleNameList.get(0);
+				//System.out.println(roleNameMap.get("name")+"==============name");
 				
-				if(userDto.getRoleDto().get(0).getName().equals("Admin")) {
+				if(roleNameMap.get("name").equals("Admin")) {
 					HttpHeaders responseHeader = new HttpHeaders();
 					return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
 					}
@@ -90,10 +91,15 @@ public class UserController {
 			else {
 				throw new CustomException(400,"invalid token input");
 				}
-			} catch (Exception e) {
-				//e.printStackTrace();
-				throw new CustomException(400,e.toString()+" from user controller");
-				}
+			}
+		catch (NullPointerException e) {
+			//e.printStackTrace();
+			throw new CustomException(400,e.toString());
+			}
+		catch (Exception e) {
+			//e.printStackTrace();
+			throw new CustomException(400,e.toString());
+			}
 		/*ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
 		 * exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
 		 * return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);*/

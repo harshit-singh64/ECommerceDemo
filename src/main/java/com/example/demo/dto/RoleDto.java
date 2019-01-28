@@ -10,16 +10,28 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class RoleDto {
 	private Integer id;
 	
-	@NotNull(message="name cannot be null")
+	//@NotNull(message="name cannot be null")
 	@Size(min=2, max=50)
 	private String name;
-	
-	private List<UserDto> userDto;
-	
+//	
+//	@JsonIgnore
+//	private List<UserDto> userDto;
+//	
 	public RoleDto() {
 		super();
 	}
 	
+	public RoleDto(@Size(min = 2, max = 50) String name) {
+		super();
+		this.name = name;
+	}
+	
+	public RoleDto(Integer id, @NotNull(message = "name cannot be null") @Size(min = 2, max = 50) String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -36,17 +48,17 @@ public class RoleDto {
 		this.name = name;
 	}
 	
-	@JsonIgnore
-	public List<UserDto> getUserDto() {
-		return userDto;
-	}
-
-	public void setUserDto(List<UserDto> userDto) {
-		this.userDto = userDto;
-	}
+//	@JsonIgnore
+//	public List<UserDto> getUserDto() {
+//		return userDto;
+//	}
+//
+//	public void setUserDto(List<UserDto> userDto) {
+//		this.userDto = userDto;
+//	}
 
 	@Override
 	public String toString() {
-		return "RoleDto [id=" + id + ", name=" + name + ", userDto=" + userDto + "]";
+		return "RoleDto [id=" + id + ", name=" + name + "]";
 	}
 }

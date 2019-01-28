@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,18 +20,29 @@ public class Role {
 	private Integer id;
 	private String name;
 	
-	@ManyToMany(mappedBy = "role", fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy = "role", cascade={CascadeType.ALL})
 	private List<User> user = new ArrayList<User>();
 
 	public Role() {
 		super();
 	}
 
+	public Role(String name) {
+		super();
+		this.name = name;
+	}
+	
 	public Role(Integer id, String name, List<User> user) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.user = user;
+	}
+
+	public Role(Integer id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
 	}
 
 	public Integer getId() {

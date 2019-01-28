@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.CustomException;
 import com.example.demo.repo.IUserRepo;
 
 @Component
@@ -11,7 +12,7 @@ public class AuthorizationByRole {
 	@Autowired
 	private IUserRepo userRepo;
 	
-	public boolean authorizationOfUser(String email) {
+	public boolean authorizationOfUser(String email) throws CustomException {
 		User user = userRepo.findByEmail(email);
 		System.out.println(user);
 		System.out.println(user.getRole().get(0).getName());

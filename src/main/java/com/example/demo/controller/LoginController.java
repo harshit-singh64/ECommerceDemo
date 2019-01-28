@@ -38,33 +38,41 @@ public class LoginController {
 		
 		try {
 			System.out.println(userCredentials.getUsername()+"=========="+ userCredentials.getPassword());
+			
 			userDto = loginService.login(userCredentials.getUsername(), userCredentials.getPassword());
 			
 			if(userDto != null) {
 				String token = jwtTokenGenerator.tokenGenerator(userDto);
-				
+				System.out.println("token generated........... ");
 				jedis.set(token, userCredentials.getUsername());
-				//System.out.println(token);
-				//System.out.println(jedis.get(token));
 				
 				loginResponse.setStatus(HttpStatus.CREATED.toString());
 				loginResponse.setToken(token);
 				loginResponse.setMessage(HttpStatus.OK.toString());
-				System.out.println("login sucess");
+				System.out.println("login sucess.................. and token generated");
 				}
 			/*else {
 				loginResponse.setToken("Please check your credentials");
 				loginResponse.setStatus(HttpStatus.UNAUTHORIZED.toString());
 				System.out.println("else block : " + HttpStatus.UNAUTHORIZED.toString());
 				}*/
-			} catch (Exception e) {
-				//e.printStackTrace();
-				throw new CustomException(400,e.toString()+"from login controller");
-				
-				/*loginResponse.setToken(null);
-				loginResponse.setMessage("Please check your credentials");
-				loginResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());*/
-				}
+			} 
+		catch (NullPointerException e) {
+			//e.printStackTrace();
+			throw new CustomException(400,e.toString());
+			
+			/*loginResponse.setToken(null);
+			loginResponse.setMessage("Please check your credentials");
+			loginResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());*/
+			}
+		catch (CustomException e) {
+			//e.printStackTrace();
+			throw new CustomException(400,e.toString());
+			
+			/*loginResponse.setToken(null);
+			loginResponse.setMessage("Please check your credentials");
+			loginResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());*/
+			}
 		return new ResponseEntity<>(loginResponse, responseHeader, HttpStatus.OK);
 		}
 	}

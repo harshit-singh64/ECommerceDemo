@@ -82,13 +82,22 @@ public class UserService implements IUserService {
 	
 	/*inserting value*/
 	
+	@SuppressWarnings({"unchecked" })
 	public UserDto insertUser(UserDto userDto) throws InvalidInputException {
 		//try {
 		User user = new User();
 		//Role role = new Role();
-			if(userDto.getId() == null && userDto.getPassword() == null) {
+			if(userDto.getId() == null && userDto.getPassword() == null && userDto.getRoleDto() == null) {
 					try {
 						userDto.setPassword(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8));
+						RoleDto defaultRole = new RoleDto("User");
+						//ArrayList defaultRole = new ArrayList();
+						//ArrayList<RoleDto> defaultRoleList = new ArrayList<>();
+						List<RoleDto> defaultRoleList = new ArrayList<>();
+						defaultRoleList.add(defaultRole);
+						//userDto.setRoleDto(defaultRoleList);
+						
+						userDto.setRoleDto(defaultRoleList);
 						
 						System.out.println(userDto);
 						
@@ -118,13 +127,16 @@ public class UserService implements IUserService {
 						
 						userRepo.save(user);
 						
+						System.out.println(user);
+						
+						
 						emailService.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
 						
 						userDto.setId(user.getId());
 						
 						logger.info("done>>>>>>>>>>>>");
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 						throw new InvalidInputException(400,e.toString());
 					}
 				/*try {
@@ -141,7 +153,7 @@ public class UserService implements IUserService {
 					}*/
 				}
 			else {
-				throw new InvalidInputException(400,"you are not allowed to enter id and password");
+				throw new InvalidInputException(400,"you are not allowed to enter id and password and role");
 			}
 			/*} catch (Exception e) {
 			throw new InvalidInputException("not allowed");

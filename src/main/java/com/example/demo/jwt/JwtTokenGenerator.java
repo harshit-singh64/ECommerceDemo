@@ -23,23 +23,31 @@ public class JwtTokenGenerator {
 	private String secretKey;
 	
 	public String tokenGenerator(UserDto userDto) {
+		System.out.println("userdto from token generator: "+userDto);
+		
 		User user = new User();
 		user = userService.dtoToEntityAssembler(userDto, user);
 		
+		System.out.println("user from token generator: "+user);
+		
 		Date date = new Date();
 		long time = date.getTime();
-		Date expirationTime = new Date(time + 5l);//5 seconds
-		System.out.println(date);
-		System.out.println(time);
-		System.out.println(expirationTime);
+		Date expirationTime = new Date(time + 5000l);//5 seconds
+		//System.out.println(date);
+		//System.out.println(time);
+		//System.out.println(expirationTime);
 		
 		//Header header = Jwts.header().setType("JWT");
 		
-		Claims claims=Jwts.claims().setSubject(userDto.getEmail()).setIssuedAt(date).setExpiration(expirationTime);
+		Claims claims=Jwts.claims()
+				.setSubject(userDto.getEmail())
+				.setIssuedAt(date)
+				.setExpiration(expirationTime);
+		
 		claims.put("id",user.getId());
-		claims.put("password", user.getPassword());
 		claims.put("phoneNumber", user.getPhoneNumber());
-		claims.put("role", user.getRole().get(0).getName());
+		claims.put("name", user.getName());
+		claims.put("role", user.getRole());
 		//claims.setExpiration(expirationTime);
 		
 		return Jwts.builder()

@@ -29,8 +29,6 @@ public class User {
 		super();
 	}
 	
-	
-	
 	public User(Integer id, String email, String password, String assignedRole) {
 		super();
 		this.id = id;
@@ -38,8 +36,6 @@ public class User {
 		this.password = password;
 		this.assignedRole = assignedRole;
 	}
-
-
 
 	public User(Integer id, String name, String email, String phoneNumber, String password, List<Role> role) {
 		super();
