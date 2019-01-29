@@ -27,7 +27,7 @@ public class LoginService implements ILoginService {
 				return userDto;
 				} 
 			else {
-				throw new CustomException("Login not successfull");
+				throw new CustomException("Wrong Paswword");
 				}
 		} 
 		catch (CustomException e) {

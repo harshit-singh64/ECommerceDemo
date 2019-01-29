@@ -16,11 +16,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Role {
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	//@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
 	
-	@ManyToMany(mappedBy = "role", cascade={CascadeType.ALL})
+	@ManyToMany(mappedBy = "role")
 	private List<User> user = new ArrayList<User>();
 
 	public Role() {

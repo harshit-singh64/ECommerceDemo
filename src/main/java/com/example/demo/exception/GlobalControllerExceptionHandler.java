@@ -40,7 +40,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 			WebRequest request) {
 		
 		ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
-				exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage()); 
+				exception.getCode(),"Validation Failed", exception.getMessage(), exception.toString()+" >> "+exception.getErrorMessage()); 
 		
 		return new ResponseEntity<Object>(error, HttpStatus.BAD_REQUEST);
 		  }

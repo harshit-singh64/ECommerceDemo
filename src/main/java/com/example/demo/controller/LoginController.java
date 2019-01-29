@@ -35,31 +35,34 @@ public class LoginController {
 		HttpHeaders responseHeader = new HttpHeaders();
 		LoginResponse loginResponse = new LoginResponse();
 		UserDto userDto = new UserDto();
-		
+		String token = null;
 		try {
 			System.out.println(userCredentials.getUsername()+"=========="+ userCredentials.getPassword());
 			
 			userDto = loginService.login(userCredentials.getUsername(), userCredentials.getPassword());
 			
 			if(userDto != null) {
-				String token = jwtTokenGenerator.tokenGenerator(userDto);
+				token = jwtTokenGenerator.tokenGenerator(userDto);
 				System.out.println("token generated........... ");
 				jedis.set(token, userCredentials.getUsername());
 				
 				loginResponse.setStatus(HttpStatus.CREATED.toString());
 				loginResponse.setToken(token);
-				loginResponse.setMessage(HttpStatus.OK.toString());
+				loginResponse.setMessage("SUCESS");
 				System.out.println("login sucess.................. and token generated");
+				return new ResponseEntity<>(loginResponse, responseHeader, HttpStatus.OK);
 				}
-			/*else {
-				loginResponse.setToken("Please check your credentials");
+			else {
 				loginResponse.setStatus(HttpStatus.UNAUTHORIZED.toString());
+				loginResponse.setToken(token);
+				loginResponse.setMessage("FALIURE");
 				System.out.println("else block : " + HttpStatus.UNAUTHORIZED.toString());
-				}*/
+				return new ResponseEntity<>(loginResponse, responseHeader, HttpStatus.OK);
+				}
 			} 
 		catch (NullPointerException e) {
 			//e.printStackTrace();
-			throw new CustomException(400,e.toString());
+			throw new CustomException(400,"Invalid Input",e.toString());
 			
 			/*loginResponse.setToken(null);
 			loginResponse.setMessage("Please check your credentials");
@@ -67,12 +70,12 @@ public class LoginController {
 			}
 		catch (CustomException e) {
 			//e.printStackTrace();
-			throw new CustomException(400,e.toString());
+			throw new CustomException(400,"Invalid Input",e.toString());
 			
 			/*loginResponse.setToken(null);
 			loginResponse.setMessage("Please check your credentials");
 			loginResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());*/
 			}
-		return new ResponseEntity<>(loginResponse, responseHeader, HttpStatus.OK);
+		//return new ResponseEntity<>(loginResponse, responseHeader, HttpStatus.OK);
 		}
 	}

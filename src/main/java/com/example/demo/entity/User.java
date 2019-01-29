@@ -22,7 +22,7 @@ public class User {
 	private String password;
 	private String assignedRole;
 	
-	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToMany(fetch=FetchType.EAGER)
 	List<Role> role = new ArrayList<Role>();
 	
 	public User() {

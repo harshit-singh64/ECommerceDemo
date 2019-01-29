@@ -5,6 +5,7 @@ public class CustomException extends Exception {
 	
 	private Integer code;
 	private String message;
+	private String errorMessage;
 	
 	public CustomException() {
 		super();
@@ -13,10 +14,21 @@ public class CustomException extends Exception {
 		super();
 		this.message = message;
 	}
+	public CustomException(String message, String errorMessage) {
+		super();
+		this.message = message;
+		this.errorMessage = errorMessage;
+	}
 	public CustomException(Integer code, String message) {
 		super();
 		this.code = code;
 		this.message = message;
+	}
+	public CustomException(Integer code, String message, String errorMessage) {
+		super();
+		this.code = code;
+		this.message = message;
+		this.errorMessage = errorMessage;
 	}
 	
 	public Integer getCode() {
@@ -30,5 +42,11 @@ public class CustomException extends Exception {
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }

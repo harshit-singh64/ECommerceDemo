@@ -1,39 +1,26 @@
 package com.example.demo.jwt;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.dto.RoleDto;
 import com.example.demo.dto.UserDto;
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
 import com.example.demo.exception.CustomException;
-import com.example.demo.service.IUserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import net.bytebuddy.dynamic.scaffold.MethodGraph.Linked;
 
 @Component
 public class JwtTokenDecoder {
-	@Autowired
-	private IUserService userService;
 	
 	@Value("${spring.security.signing-key}")
 	private String secretKey;
 	
-	//String secretKey = "my-secret-token-to-change-in-production";
-	
-	
 	@SuppressWarnings({ "unchecked"})
 	public UserDto tokenDecoder(String token) throws CustomException {
 		UserDto userDto = new UserDto();
-		User user = new User();
 		try {
 			System.out.println("token from tokenDecoder "+token);
 			
@@ -55,7 +42,7 @@ public class JwtTokenDecoder {
 			System.out.println(roleNameMap.get("name")+"==============name");*/
 		} catch (Exception e) {
 			//e.printStackTrace();
-			throw new CustomException(500,e.toString()+"error in deocoding");
+			throw new CustomException(500,"error in deocoding",e.toString());
 			}
 		return userDto;
 		}

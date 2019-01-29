@@ -29,6 +29,7 @@ import com.example.demo.jwt.JwtTokenDecoder;
 import com.example.demo.login.Login;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.IUserService;
+import com.example.demo.util.UtilResponse;
 
 import redis.clients.jedis.Jedis;
 
@@ -85,20 +86,20 @@ public class UserController {
 					return new ResponseEntity<>(userService.displayAllUsers(), responseHeader, HttpStatus.OK);
 					}
 				else {
-					throw new CustomException(400,"not allowed");
+					throw new CustomException(400,"Invalid Access","you are not allowed in this area");
 					}
 				}
 			else {
-				throw new CustomException(400,"invalid token input");
+				throw new CustomException(400,"Invalid Input","Invalid token input");
 				}
 			}
 		catch (NullPointerException e) {
 			//e.printStackTrace();
-			throw new CustomException(400,e.toString());
+			throw e;
 			}
 		catch (Exception e) {
 			//e.printStackTrace();
-			throw new CustomException(400,e.toString());
+			throw e;
 			}
 		/*ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
 		 * exception.getCode(),"Validation Failed", "Unique Value Exception", exception.getMessage());
@@ -143,11 +144,53 @@ public class UserController {
 		//return userService.updateUser(userDto);
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@DeleteMapping("/user/{id}")
-	public String delete(@PathVariable(value = "id") Integer userId) {
-		userService.delete(userId);
-		return "deleted";
-	}
+	public ResponseEntity<?> delete(@PathVariable(value = "id") Integer userId, 
+			HttpServletRequest httpServletRequest, CustomException exception) throws CustomException {
+		
+		UtilResponse utilResponse = new UtilResponse();
+		
+		String token = httpServletRequest.getHeader("Authorization");
+		System.out.println("token " + token);
+		String username = jedis.get(token);
+		System.out.println("username " + username);
+		
+		try {
+			if(username != null) {
+				System.out.println("username " + username);
+				UserDto userDto =new UserDto();
+				userDto = jwtTokenDecoder.tokenDecoder(token);
+				
+				System.out.println("token decoder values " + userDto);
+				
+				ArrayList roleNameList = (ArrayList) userDto.getRoleDto();
+				LinkedHashMap<Object, Object> roleNameMap = (LinkedHashMap<Object, Object>) roleNameList.get(0);
+				//System.out.println(roleNameMap.get("name")+"==============name");
+				
+				if(roleNameMap.get("name").equals("Admin")) {
+					HttpHeaders responseHeader = new HttpHeaders();
+					
+					System.out.println(userId);
+					String s = userService.delete(userId);
+					System.out.println(s);
+					
+					utilResponse.setStatus(HttpStatus.CREATED.toString());
+					utilResponse.setMessage("User with id "+ userId +" Deleted!");
+					
+					return new ResponseEntity<>(utilResponse, responseHeader, HttpStatus.OK);
+					}
+				else {
+					throw new CustomException(400,"Invalid Access","you are not allowed in this area");
+					}
+				}
+			else {
+				throw new CustomException(400,"Invalid Input","Invalid token input");
+				}
+			} catch (Exception e) {
+				throw e;
+				}
+		}
 	
 	/*@PostMapping("/user")
 	public User createStudent(@RequestBody UserDto user) {

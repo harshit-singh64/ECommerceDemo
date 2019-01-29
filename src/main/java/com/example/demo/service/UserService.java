@@ -15,6 +15,7 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.InvalidInputException;
+import com.example.demo.repo.IRoleRepo;
 import com.example.demo.repo.IUserRepo;
 
 @Service
@@ -27,6 +28,8 @@ public class UserService implements IUserService {
 	private EmailService emailService;
 	@Autowired
 	private RoleService roleService;
+	@Autowired
+	private IRoleRepo roleRepo;
 	
 	@Value("${spring.mail.username}")
 	private String emailFrom;
@@ -82,58 +85,41 @@ public class UserService implements IUserService {
 	
 	/*inserting value*/
 	
-	@SuppressWarnings({"unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked"})
 	public UserDto insertUser(UserDto userDto) throws InvalidInputException {
 		//try {
 		User user = new User();
 		//Role role = new Role();
 			if(userDto.getId() == null && userDto.getPassword() == null && userDto.getRoleDto() == null) {
 					try {
-						userDto.setPassword(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8));
-						RoleDto defaultRole = new RoleDto("User");
-						//ArrayList defaultRole = new ArrayList();
-						//ArrayList<RoleDto> defaultRoleList = new ArrayList<>();
-						List<RoleDto> defaultRoleList = new ArrayList<>();
-						defaultRoleList.add(defaultRole);
-						//userDto.setRoleDto(defaultRoleList);
+						RoleDto roleDto = new RoleDto();
+						//roleDto = roleService.getById(2);
+						//System.out.println(roleDto);
+						List<Integer> roleIdList = new ArrayList<>();
+						List<RoleDto> defaultRoleList = new ArrayList();
+						roleIdList.add(2);
 						
+						for(int i = 0; i < roleIdList.size(); i++) {
+							Integer roleId = roleIdList.get(i);
+							Role role = roleRepo.findById(roleId).get();
+							roleDto = roleService.entityToDtoAssembler(roleDto, role);
+							defaultRoleList.add(roleDto);
+							}
 						userDto.setRoleDto(defaultRoleList);
 						
-						System.out.println(userDto);
+						userDto.setPassword(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8));
+						userDto.setRoleDto(defaultRoleList);
 						
-						/*
-						List<RoleDto> roleDtoList = new ArrayList<>();
-						List<Role> roleList = new ArrayList<>();
-						roleDtoList = userDto.getRoleDto();
-						
-						System.out.println(roleDtoList);
-						
-						for(RoleDto roleDto: roleDtoList) {
-							Role role = new Role();
-							role = roleService.dtoToEntityAssembler(roleDto, role);
-							roleList.add(role);
-						}
-						
-						System.out.println(roleList);*/
-						
-						System.out.println(user);
-						
-						
-						
-						
+						//System.out.println(userDto);
 						user = dtoToEntityAssembler(userDto, user);
-						
-						System.out.println(user);
+						//System.out.println(user);
 						
 						userRepo.save(user);
 						
-						System.out.println(user);
-						
+						//System.out.println(user);
 						
 						emailService.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
-						
 						userDto.setId(user.getId());
-						
 						logger.info("done>>>>>>>>>>>>");
 					} catch (Exception e) {
 						//e.printStackTrace();
