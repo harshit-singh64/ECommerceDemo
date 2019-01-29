@@ -110,10 +110,72 @@ public class UserController {
 		System.out.println("token decoder values " + userDto);*/
 		}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserDto getStudentById(@PathVariable(value = "id") @Valid Integer userId, 
-			@RequestHeader(value = "userName") String userName,
-			@RequestHeader(value = "password") String password) throws CustomException {
+	public ResponseEntity<?> getStudentById(@PathVariable(value = "id") @Valid Integer userId, 
+			HttpServletRequest httpServletRequest) throws CustomException {
+		try {
+			String token = httpServletRequest.getHeader("Authorization");
+			System.out.println("token " + token);
+			String username = jedis.get(token);
+			System.out.println("username " + username);
+			//String username = jedis.get(token);
+			
+			if(username != null) {
+				System.out.println("username " + username);
+				UserDto userDto =new UserDto();
+				userDto = jwtTokenDecoder.tokenDecoder(token);
+				
+				System.out.println("token decoder values " + userDto);
+				
+				ArrayList roleNameList = (ArrayList) userDto.getRoleDto();
+				LinkedHashMap<Object, Object> roleNameMap = (LinkedHashMap<Object, Object>) roleNameList.get(0);
+				//System.out.println(roleNameMap.get("name")+"==============name");
+				UserDto userDtoFromDatabase = new UserDto();
+				
+				userDtoFromDatabase = userService.displayById(userId);
+				
+				System.out.println("dto from datbase " + userDto);
+				
+				System.out.println(roleNameMap.get("name").equals("User"));
+				System.out.println(userDtoFromDatabase.getEmail());
+				System.out.println(username);
+				
+				//System.out.println(userDtoFromDatabase.getId().equals(userDto.getId()));
+				
+				
+				if(roleNameMap.get("name").equals("Admin")) {
+					HttpHeaders responseHeader = new HttpHeaders();
+					return new ResponseEntity<>(userService.displayById(userId), responseHeader, HttpStatus.OK);
+					}
+				else if(roleNameMap.get("name").equals("User") &&
+						(username.equals(userDtoFromDatabase.getEmail()) &&
+						userDtoFromDatabase.getId().equals(userDto.getId()))) {
+					HttpHeaders responseHeader = new HttpHeaders();
+					return new ResponseEntity<>(userService.displayById(userId), responseHeader, HttpStatus.OK);
+				}
+				else {
+					throw new CustomException(400,"Invalid Access","you are not allowed in this area");
+					}
+				}
+			else {
+				throw new CustomException(400,"Invalid Input","Invalid token input");
+				}
+			}
+		catch (NullPointerException e) {
+			//e.printStackTrace();
+			throw e;
+			}
+		catch (Exception e) {
+			//e.printStackTrace();
+			throw e;
+			}/*
+		
+		String token = httpServletRequest.getHeader("Authorization");
+		System.out.println("token " + token);
+		String username = jedis.get(token);
+		System.out.println("username " + username);
+		
 		UserDto userDto = new UserDto();
 		Boolean loginSuccess = loginClass.login(userName, password,userId);
 		
@@ -123,7 +185,7 @@ public class UserController {
 		else{
 			throw new CustomException("Login Error");
 		}
-		return userDto;
+		return userDto;*/
 		//return userService.displayById(userId);
 	}
 	
