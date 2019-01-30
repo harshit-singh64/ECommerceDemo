@@ -1,5 +1,6 @@
 package com.example.demo.jwt;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,13 @@ public class JwtTokenGenerator {
 		
 		System.out.println("user from token generator: "+user);
 		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("E dd/MM/yyyy HH:mm:ss zzz");
 		Date date = new Date();
 		long time = date.getTime();
-		Date expirationTime = new Date(time + 5000l);//5 seconds
+		Date expirationTime = new Date(time + 1000000l);//5 seconds
+		
+		System.out.println("issued at : "+dateFormat.format(date));
+		System.out.println("expires at : "+dateFormat.format(expirationTime));
 		//System.out.println(date);
 		//System.out.println(time);
 		//System.out.println(expirationTime);
@@ -51,6 +56,7 @@ public class JwtTokenGenerator {
 		//claims.setExpiration(expirationTime);
 		
 		return Jwts.builder()
+				.setExpiration(expirationTime)
 				//.setHeader()
 				.setClaims(claims)
 				.signWith(SignatureAlgorithm.HS256, secretKey)
