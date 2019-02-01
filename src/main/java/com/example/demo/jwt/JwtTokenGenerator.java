@@ -50,7 +50,7 @@ public class JwtTokenGenerator {
 				.setExpiration(expirationTime);
 		
 		claims.put("id",user.getId());
-		//claims.put("phoneNumber", user.getPhoneNumber());
+		claims.put("phoneNumber", user.getPhoneNumber());
 		claims.put("name", user.getName());
 		claims.put("role", user.getRole());
 		//claims.setExpiration(expirationTime);

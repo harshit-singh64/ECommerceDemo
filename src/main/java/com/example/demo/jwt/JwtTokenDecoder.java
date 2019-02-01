@@ -38,7 +38,7 @@ public class JwtTokenDecoder {
 		userDto.setEmail(claims.getSubject());
 		userDto.setId((Integer) claims.get("id"));
 		userDto.setName((String) claims.get("name"));
-		//userDto.setPhoneNumber((String) claims.get("phoneNumber"));
+		userDto.setPhoneNumber((String) claims.get("phoneNumber"));
 		userDto.setRoleDto((List<RoleDto>) claims.get("role"));
 		
 		dtoMap.put(userDto, claims.getExpiration());

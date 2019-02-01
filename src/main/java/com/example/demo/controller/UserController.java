@@ -63,7 +63,7 @@ public class UserController {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest, CustomException exception) throws CustomException {
+	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest) throws CustomException {
 		try {
 			String token = httpServletRequest.getHeader("Authorization");
 			System.out.println("token " + token);
