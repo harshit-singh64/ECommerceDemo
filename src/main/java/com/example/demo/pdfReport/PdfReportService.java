@@ -3,7 +3,6 @@ package com.example.demo.pdfReport;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,10 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.dto.UserDto;
+import com.example.demo.exception.CustomException;
 import com.example.demo.service.IUserService;
-import com.example.demo.service.UserService;
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -91,7 +89,7 @@ public class PdfReportService {
 		document.add(paragraph);
 	}
 	
-	public List<UserDto> getAll() {
+	public List<UserDto> getAll() throws CustomException {
 		return userService.displayAllUsers();
 	}
 

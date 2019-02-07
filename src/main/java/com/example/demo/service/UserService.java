@@ -8,12 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.RoleDto;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
+import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.repo.IRoleRepo;
 import com.example.demo.repo.IUserRepo;
@@ -108,7 +110,7 @@ public class UserService implements IUserService {
 						userDto.setRoleDto(defaultRoleList);
 						
 						userDto.setPassword(UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8));
-						userDto.setRoleDto(defaultRoleList);
+						//userDto.setRoleDto(defaultRoleList);
 						
 						//System.out.println(userDto);
 						user = dtoToEntityAssembler(userDto, user);
@@ -118,7 +120,7 @@ public class UserService implements IUserService {
 						
 						//System.out.println(user);
 						
-						emailService.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
+						//emailService.sendMail(user.getEmail(), user.getPassword(), user.getName(), user.getId());
 						userDto.setId(user.getId());
 						logger.info("done>>>>>>>>>>>>");
 					} catch (Exception e) {
@@ -149,17 +151,24 @@ public class UserService implements IUserService {
 	
 	/*display all values*/
 	
-	public List<UserDto> displayAllUsers() {
-		List<User> userList = userRepo.findAll();
-		List<UserDto> userDtoList = new ArrayList<>();
-		//List<Role> roleList 
-				
-		for(User user: userList) {
-			UserDto userDto = new UserDto();
-			userDto = entityToDtoAssembler(userDto, user);
-			userDtoList.add(userDto);
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public List<UserDto> displayAllUsers() throws CustomException {
+		try {
+			List<User> userList = userRepo.findAll();
+			List<UserDto> userDtoList = new ArrayList<>();
+			//List<Role> roleList 
+					
+			for(User user: userList) {
+				UserDto userDto = new UserDto();
+				userDto = entityToDtoAssembler(userDto, user);
+				userDtoList.add(userDto);
+			}
+			return userDtoList;
+		} catch (Exception e) {
+			throw new CustomException(400,"you are not allowed to enter id and password and role");
 		}
-		return userDtoList;
+		
 	}
 	
 	/* displaying value by id */

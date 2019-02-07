@@ -53,7 +53,7 @@ public class PdfReportController {
 			if(username != null) {
 				List<UserDto> userDtoList = new ArrayList<>();
 				//userDto = jwtTokenDecoder.tokenDecoder(token);
-				userDtoList = jwtTokenValidator.tokenValidator(token);
+				//userDtoList = jwtTokenValidator.tokenValidator(token);
 				
 				System.out.println("validated and decoded token : " + userDtoList);
 				

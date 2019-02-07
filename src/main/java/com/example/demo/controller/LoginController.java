@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +31,9 @@ public class LoginController {
 	private ILoginService loginService;
 	@Autowired
 	private JwtTokenGenerator jwtTokenGenerator;
-	
+	//@Autowired
+	//private AuthenticationManager authenticationManager;
+	 
 	Jedis jedis = new Jedis("127.0.0.1", 6379);//"127.0.0.1", 6379
 	
 	@PostMapping("/login")
@@ -43,9 +49,17 @@ public class LoginController {
 			userDto = loginService.login(userCredentials.getUsername(), userCredentials.getPassword());
 			
 			if(userDto != null) {
-				token = jwtTokenGenerator.tokenGenerator(userDto);
+				token = jwtTokenGenerator.tokenGenerator2(userDto);
 				System.out.println("token generated........... ");
 				jedis.set(token, userCredentials.getUsername());
+				
+				/*final Authentication authentication = authenticationManager.authenticate(
+		                new UsernamePasswordAuthenticationToken(
+		                		userCredentials.getUsername(),
+		                		userCredentials.getPassword()
+		                )
+		        );
+		        SecurityContextHolder.getContext().setAuthentication(authentication);*/
 				
 				loginResponse.setStatus(HttpStatus.CREATED.toString());
 				loginResponse.setToken(token);

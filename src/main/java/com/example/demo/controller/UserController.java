@@ -13,6 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +39,7 @@ import com.example.demo.util.UtilResponse;
 
 import redis.clients.jedis.Jedis;
 
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -55,13 +61,31 @@ public class UserController {
 		return "Your Account is Activated !!!";
 		}
 	
-	@PostMapping("/user")
+	@PostMapping("/signup")
 	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException, 
 	UnsupportedEncodingException {
 		return userService.insertUser(userDto);
 		}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	//@Secured("ROLE_ADMIN")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PostFilter("hasPermission(filterObject, 'read')")
+	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<UserDto> getAll() throws CustomException {
+		System.out.println(userService.displayAllUsers());
+		return userService.displayAllUsers();
+		}
+	
+	/*@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String getAll() throws CustomException {
+		System.out.println("1>>>>>>>>>>>>>");
+//		System.out.println("display : "+userService.displayAllUsers());
+		return "hello";
+		}*/
+	
+	/*@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest) throws CustomException {
 		try {
@@ -101,9 +125,9 @@ public class UserController {
 			//e.printStackTrace();
 			throw e;
 			}
-		}
+		}*/
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	/*@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getStudentById(@PathVariable(value = "id") @Valid Integer userId, 
 			HttpServletRequest httpServletRequest) throws CustomException {
@@ -162,7 +186,7 @@ public class UserController {
 		catch (Exception e) {
 			//e.printStackTrace();
 			throw e;
-			}/*
+			}
 		
 		String token = httpServletRequest.getHeader("Authorization");
 		System.out.println("token " + token);
@@ -180,7 +204,7 @@ public class UserController {
 		}
 		return userDto;*/
 		//return userService.displayById(userId);
-	}
+	/*}
 	
 	@PutMapping("/user")
 	public UserDto updateUser(@RequestBody @Valid UserDto userDto,
@@ -245,7 +269,7 @@ public class UserController {
 			} catch (Exception e) {
 				throw e;
 				}
-		}
+		}*/
 	
 	/*@PostMapping("/user")
 	public User createStudent(@RequestBody UserDto user) {

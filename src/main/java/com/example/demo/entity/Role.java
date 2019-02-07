@@ -58,6 +58,7 @@ public class Role {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	@JsonIgnore
 	public List<User> getUser() {
 		return user;

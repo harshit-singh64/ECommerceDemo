@@ -51,7 +51,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 			final HttpServletRequest request) {
 		Integer statusCode = 500;
 		
-		BindingResult result = ((MethodArgumentNotValidException) exception).getBindingResult();
+		//BindingResult result = ((MethodArgumentNotValidException) exception).getBindingResult();
 		ExceptionResponse error = new ExceptionResponse();
 		error.setTimestamp(LocalDateTime.now());
 		error.setStatus(HttpStatus.valueOf(statusCode));
@@ -59,7 +59,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		error.setError("Validation Failed");
 		error.setErrorMessage(exception.getMessage());
 		error.callerURL(request.getRequestURI());
-		error.setErrors(ValidationUtil.fromBindingErrors(result));
+		//error.setErrors(ValidationUtil.fromBindingErrors(result));
 		
 		return error;
 	}
