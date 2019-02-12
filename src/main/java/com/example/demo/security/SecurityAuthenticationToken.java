@@ -1,9 +1,10 @@
-/*package com.example.demo.security;
+package com.example.demo.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 public class SecurityAuthenticationToken extends UsernamePasswordAuthenticationToken{
-
+	private static final long serialVersionUID = 2657215068781221886L;
+	
 	private String token;
 	
 	public SecurityAuthenticationToken(String token) {
@@ -30,4 +31,3 @@ public class SecurityAuthenticationToken extends UsernamePasswordAuthenticationT
 		return null;
 	}
 }
-*/

@@ -1,4 +1,4 @@
-/*package com.example.demo.security;
+package com.example.demo.security;
 
 import java.io.IOException;
 
@@ -10,45 +10,40 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.stereotype.Component;
 
 public class SecurityAuthenticationTokenFilter extends AbstractAuthenticationProcessingFilter {
-	public SecurityAuthenticationTokenFilter()
-	{
+	public SecurityAuthenticationTokenFilter() {
 		super("/api/**");
 	}
+	
 	//decode token here
 	public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
 			throws AuthenticationException, IOException, ServletException {
+		String authenticationToken = httpServletRequest.getHeader("Authorization");
 		
-		String authenticationToken=getToken(httpServletRequest);
-		SecurityAuthenticationToken token = new SecurityAuthenticationToken(authenticationToken);
-		return getAuthenticationManager().authenticate(token);
-	}
-
-	public String getToken(HttpServletRequest httpServletRequest) {
-		String header = httpServletRequest.getHeader("Authorization");
-
-
-        if (header == null) {
+		System.out.println("authenticationToken>>>>>>"+authenticationToken);
+		
+        if (authenticationToken == null) {
             throw new RuntimeException("JWT Token is missing");
         }
-
-        String authenticationToken = header;
-        return authenticationToken;
-	}
+        else {
+        	System.out.println("httpServletRequest>>>>>>"+httpServletRequest);
+    		System.out.println("authenticationToken>>>>>>"+authenticationToken);
+    		
+    		SecurityAuthenticationToken token = new SecurityAuthenticationToken(authenticationToken);
+    		
+    		System.out.println("auth>>>>>>>>>>"+getAuthenticationManager().authenticate(token).toString());
+    		return getAuthenticationManager().authenticate(token);
+        	}
+        }
 	
 	@Override
-	 protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-	        super.successfulAuthentication(request, response, chain, authResult);
-	        chain.doFilter(request, response);
-	    }
-	 
-	public SecurityAuthenticationTokenFilter() {
-		super();
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+		super.successfulAuthentication(request, response, chain, authResult);
+		chain.doFilter(request, response);
 		}
 	
-	@Value("${spring.security.signing-key}")
+	/*@Value("${spring.security.signing-key}")
 	private String secretKey  = "MaYzkSjmkzPC57L";
 	
 	public Authentication getAuthentication(HttpServletRequest request) {
@@ -70,6 +65,6 @@ public class SecurityAuthenticationTokenFilter extends AbstractAuthenticationPro
             }
         }
         return null;
-    }
+    }*/
 }
-//we managed to retrieve a user*/
+//we managed to retrieve a user

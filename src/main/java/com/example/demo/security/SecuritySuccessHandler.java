@@ -1,4 +1,4 @@
-/*package com.example.demo.security;
+package com.example.demo.security;
 
 import java.io.IOException;
 
@@ -15,8 +15,5 @@ public class SecuritySuccessHandler implements AuthenticationSuccessHandler{
 	public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication e)
 			throws IOException, ServletException {
 		System.out.println("Successfully Authentication");
-		
+		}
 	}
-
-}
-*/

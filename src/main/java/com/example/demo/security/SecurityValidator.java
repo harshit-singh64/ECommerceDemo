@@ -1,8 +1,10 @@
 package com.example.demo.security;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import com.example.demo.entity.User;
+import com.example.demo.dto.RoleDto;
 import com.example.demo.exception.CustomException;
 
 import io.jsonwebtoken.Claims;
@@ -14,21 +16,22 @@ public class SecurityValidator {
 	private String secret="MaYzkSjmkzPC57L";
 	
 	
-	public User validate(String token) throws CustomException {
-		User user= new User();
+	public JwtUser validate(String token) throws CustomException {
+		JwtUser jwtUser = null;
 		try {
 		Claims body=Jwts.parser().
 				setSigningKey(secret).
 				parseClaimsJws(token).getBody();
 		
-		user.setEmail(body.getSubject());
-		user.setId(Integer.parseInt((String) body.get("id")));
-		user.setName((String) body.get("name"));
-		user.setPassword((String) body.get("password"));
-		user.setAssignedRole((String) body.get("department"));
+		jwtUser = new JwtUser();
 		
-		System.out.println(user+" security validator ");
-		return user;
+		jwtUser.setUserName(body.getSubject());
+		jwtUser.setId((Integer) body.get("id"));
+		jwtUser.setRole((String) body.get("role"));
+		jwtUser.setRoleDtoList((List<RoleDto>) body.get("roleList"));
+		
+		System.out.println(jwtUser.toString()+" security validator ");
+		return jwtUser;
 		
 		}catch (Exception e) {
 			System.out.println(e);

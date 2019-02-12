@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,7 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.InvalidInputException;
 import com.example.demo.jwt.JwtTokenValidator;
 import com.example.demo.login.Login;
+import com.example.demo.security.SecurityUserDetails;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.IUserService;
 import com.example.demo.util.UtilResponse;
@@ -51,7 +55,6 @@ public class UserController {
 	private Login loginClass;
 	@Autowired
 	private JwtTokenValidator jwtTokenValidator;
-	//private ExceptionResponse error = new ExceptionResponse();
 	
 	private Jedis jedis = new Jedis("127.0.0.1", 6379);
 	
@@ -61,20 +64,43 @@ public class UserController {
 		return "Your Account is Activated !!!";
 		}
 	
-	@PostMapping("/signup")
+	/*@PostMapping("/signup")
 	public UserDto insertUser(@RequestBody @Valid UserDto userDto) throws InvalidInputException, CustomException, 
 	UnsupportedEncodingException {
 		return userService.insertUser(userDto);
-		}
+		}*/
 	
-	//@Secured("ROLE_ADMIN")
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	//@PostFilter("hasPermission(filterObject, 'read')")
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<UserDto> getAll() throws CustomException {
-		System.out.println(userService.displayAllUsers());
+		System.out.println("display : "+userService.displayAllUsers());
 		return userService.displayAllUsers();
+		}
+	
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+	@GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getById(@PathVariable(value = "id") @Valid Integer userId,
+			HttpServletRequest httpServletRequest) throws CustomException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		SecurityUserDetails securityUserDetails = (SecurityUserDetails) auth.getPrincipal();
+		
+		String name = auth.getAuthorities().toString();
+		
+		/*System.out.println("userDto====="+securityUserDetails.getId());
+		System.out.println("name====="+name);
+		System.out.println("SecurityContextHolder name====="+auth);
+		System.out.println((userId.equals(securityUserDetails.getId()) && name.equals("[USER]")) +">>>>>"+ name.equals("[ADMIN]"));
+		System.out.println(userId+"....."+"?????"+userId.equals(securityUserDetails.getId()));*/
+		
+		if((userId.equals(securityUserDetails.getId()) && name.equals("[USER]")) || name.equals("[ADMIN]")) {
+			return new ResponseEntity<>(userService.displayById(userId), HttpStatus.OK);
+		}
+		else {
+			UtilResponse utilResponse = new UtilResponse();
+			utilResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+			utilResponse.setMessage("you are not allowed in this area");
+			return new ResponseEntity<>(utilResponse, HttpStatus.OK);
+			}
 		}
 	
 	/*@PreAuthorize("hasRole('ROLE_ADMIN')")

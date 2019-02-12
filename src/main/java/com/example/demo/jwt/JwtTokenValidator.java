@@ -1,18 +1,12 @@
 package com.example.demo.jwt;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,9 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.dto.UserDto;
-import com.example.demo.exception.CustomException;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
@@ -31,47 +22,45 @@ import io.jsonwebtoken.Jwts;
 
 @Component
 public class JwtTokenValidator implements Serializable {
-	@Value("${spring.security.signing-key}")
-	private String secretKey = "MaYzkSjmkzPC57L";
+	private static final long serialVersionUID = 1399287818282448184L;
 	
-	@Autowired
-	private JwtTokenDecoder jwtTokenDecoder;
+	@Value("${spring.security.signing-key}")
+	private String secretKey;// = "MaYzkSjmkzPC57L";
 	
 	public String getUsernameFromToken(String token) {
-		System.out.println();
         return getClaimFromToken(token, Claims::getSubject);
-    }
+        }
 	
 	public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
-        System.out.println("claims >>>" +claims);
         return claimsResolver.apply(claims);
-    }
+        }
 	
 	private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
+		return Jwts.parser()
+				.setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
-    }
+        }
 	
 	public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
-    }
+        }
 	
 	private Boolean isTokenExpired(String token) {
 	        final Date expiration = getExpirationDateFromToken(token);
 	        return expiration.before(new Date());
-	    }
-	 
+	        }
 	
 	public Boolean validateToken(String token, UserDetails userDetails) {
-		System.out.println(token+" >>>>>>> "+ userDetails);
         final String username = getUsernameFromToken(token);
-        System.out.println("username from token >>>>>>> "+ username);
-        
-        return ( username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        }
+	
+	public Boolean validateToken2(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        }
 	
 	public UsernamePasswordAuthenticationToken getAuthentication(final String token, final Authentication existingAuth, final UserDetails userDetails) {
 		

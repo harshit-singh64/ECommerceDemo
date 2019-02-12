@@ -40,14 +40,14 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 			WebRequest request) {
 		
 		ExceptionResponse error = new ExceptionResponse( LocalDateTime.now(), HttpStatus.valueOf(exception.getCode()),
-				exception.getCode(),"Validation Failed", exception.getMessage(), exception.toString()+" >> "+exception.getErrorMessage()); 
+				exception.getCode(),"Validation Failed1", exception.getMessage(), exception.toString()+" >> "+exception.getErrorMessage()); 
 		
 		return new ResponseEntity<Object>(error, HttpStatus.BAD_REQUEST);
 		  }
 	
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	public @ResponseBody ExceptionResponse handleAllException(final Exception exception, 
+	public final ResponseEntity<Object> handleAllException(final Exception exception, 
 			final HttpServletRequest request) {
 		Integer statusCode = 500;
 		
@@ -56,12 +56,12 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		error.setTimestamp(LocalDateTime.now());
 		error.setStatus(HttpStatus.valueOf(statusCode));
 		error.setErrorCode(statusCode);
-		error.setError("Validation Failed");
+		error.setError("Validation Failed2");
 		error.setErrorMessage(exception.getMessage());
 		error.callerURL(request.getRequestURI());
 		//error.setErrors(ValidationUtil.fromBindingErrors(result));
 		
-		return error;
+		return new ResponseEntity<Object>(error, HttpStatus.BAD_REQUEST);
 	}
 	
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, 
