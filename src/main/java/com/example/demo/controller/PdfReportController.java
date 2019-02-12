@@ -33,17 +33,53 @@ import redis.clients.jedis.Jedis;
 public class PdfReportController {
 	@Autowired
 	private IUserService userService;
-	@Autowired
-	private JwtTokenValidator jwtTokenValidator;
+	/*@Autowired
+	private JwtTokenValidator jwtTokenValidator;*/
 	
-	private Jedis jedis = new Jedis("127.0.0.1", 6379);
+	//private Jedis jedis = new Jedis("127.0.0.1", 6379);
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@GetMapping(value = "/pdf/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InputStreamResource> generatePdf(@PathVariable(value = "id") @Valid Integer userId, 
+	public ResponseEntity<InputStreamResource> generatePdfById(@PathVariable(value = "id") @Valid Integer userId, 
 			HttpServletRequest httpServletRequest) throws CustomException, FileNotFoundException, DocumentException {
 		
-		try {
+		
+		
+		UserDto userDto = new UserDto();
+		userDto = userService.displayById(userId);
+		ByteArrayInputStream bis = PdfReportService.generatePdfReportForUser(userDto);
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=pdf_report.pdf");
+        
+		//PdfReport.generatePdfReport();
+		//return new  ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+	}
+	
+	@GetMapping(value = "/pdf", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InputStreamResource> generatePdf(HttpServletRequest httpServletRequest) throws CustomException, FileNotFoundException, DocumentException {
+		List<UserDto> userDtoList = new ArrayList<>();
+		userDtoList = userService.displayAllUsers();
+		
+		ByteArrayInputStream bis = PdfReportService.generatePdfReportForAdmin(userDtoList);
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=pdf_report.pdf");
+        
+		//PdfReport.generatePdfReport();
+		//return new  ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+	}
+}
+		/*try {
 			String token = httpServletRequest.getHeader("Authorization");
 			System.out.println("token " + token);
 			String username = jedis.get(token);
@@ -87,9 +123,9 @@ public class PdfReportController {
 			                .contentType(MediaType.APPLICATION_PDF)
 			                .body(new InputStreamResource(bis));
 					}
-				else if(roleNameMap.get("name").equals("User")) /*&&
+				else if(roleNameMap.get("name").equals("User")) &&
 						(username.equals(userDtoFromDatabase.getEmail()) &&
-						userDtoFromDatabase.getId().equals(userDtoFromDatabase.getId())))*/ {
+						userDtoFromDatabase.getId().equals(userDtoFromDatabase.getId()))) {
 					
 					ByteArrayInputStream bis = PdfReportService.generatePdfReportForUser(userDtoList);
 					
@@ -122,7 +158,7 @@ public class PdfReportController {
 			throw e;
 			}
 			
-		/*ByteArrayInputStream bis = PdfReportService.generatePdfReport();
+		ByteArrayInputStream bis = PdfReportService.generatePdfReport();
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=pdf_report.pdf");
@@ -133,10 +169,10 @@ public class PdfReportController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));*/
+                .body(new InputStreamResource(bis));
 		}
 	
-	/*@GetMapping(value = "/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@GetMapping(value = "/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<InputStreamResource> generatePdf() throws FileNotFoundException, DocumentException {
 		ByteArrayInputStream bis = PdfReportService.generatePdfReport();
 		
@@ -150,6 +186,7 @@ public class PdfReportController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
-		}*/
+		}
 	
 	}
+*/

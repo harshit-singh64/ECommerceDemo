@@ -34,7 +34,7 @@ public class PdfReportService {
 	// private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
 	private static Font smallBold = new Font(Font.FontFamily.HELVETICA, 5, Font.NORMAL);
 
-	public static ByteArrayInputStream generatePdfReportForAdmin(List<UserDto> userDtoList, List<UserDto> userDtoListFromDatabase) throws FileNotFoundException, DocumentException {
+	public static ByteArrayInputStream generatePdfReportForAdmin(List<UserDto> userDtoList) throws FileNotFoundException, DocumentException {
 		Document document = new Document();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -42,13 +42,13 @@ public class PdfReportService {
 		
 		document.open();
 		addTitlePage(document);
-		createTableForAdmin(document, userDtoList, userDtoListFromDatabase);
+		createTableForAdmin(document, userDtoList);
 		document.close();
 		// return new FileInputStream();
 		return new ByteArrayInputStream(out.toByteArray());
 	}
 	
-	public static ByteArrayInputStream generatePdfReportForUser(List<UserDto> userDtoList) throws FileNotFoundException, DocumentException {
+	public static ByteArrayInputStream generatePdfReportForUser(UserDto userDto) throws FileNotFoundException, DocumentException {
 		Document document = new Document();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -56,7 +56,7 @@ public class PdfReportService {
 		
 		document.open();
 		addTitlePage(document);
-		createTableForUser(document, userDtoList);
+		createTableForUser(document, userDto);
 		document.close();
 		// return new FileInputStream();
 		return new ByteArrayInputStream(out.toByteArray());
@@ -93,10 +93,10 @@ public class PdfReportService {
 		return userService.displayAllUsers();
 	}
 
-	private static void createTableForAdmin(Document document, List<UserDto> userDtoList, List<UserDto> userDtoListFromDatabase) throws DocumentException {
+	private static void createTableForAdmin(Document document, List<UserDto> userDtoList) throws DocumentException {
 		Paragraph paragraph1 = new Paragraph();
 		
-		PdfPTable table1 = new PdfPTable(1);
+		/*PdfPTable table1 = new PdfPTable(1);
 		table1.setWidthPercentage(100);
 		
 		String line1 = "UserId" + "\n";                     
@@ -116,7 +116,7 @@ public class PdfReportService {
 		table1.addCell(cell1);
 		paragraph1.add(table1);
 		
-		addEmptyLine(paragraph1, 1);
+		addEmptyLine(paragraph1, 1);*/
 		
 		Paragraph paragraph2 = new Paragraph();
 		
@@ -142,10 +142,10 @@ public class PdfReportService {
 		table2.addCell(c1);
 		table2.setHeaderRows(1);
 		
-		for (int i = 0; i < userDtoListFromDatabase.size(); i++){
-			table2.addCell(userDtoListFromDatabase.get(i).getName());
-			table2.addCell(userDtoListFromDatabase.get(i).getEmail());
-			table2.addCell(userDtoListFromDatabase.get(i).getPhoneNumber());
+		for (int i = 0; i < userDtoList.size(); i++){
+			table2.addCell(userDtoList.get(i).getName());
+			table2.addCell(userDtoList.get(i).getEmail());
+			table2.addCell(userDtoList.get(i).getPhoneNumber());
          }
 		paragraph2.add(table2);
 //		table.addCell("1.0");
@@ -160,7 +160,7 @@ public class PdfReportService {
 		document.add(paragraph2);
 	}
 	
-	private static void createTableForUser(Document document, List<UserDto> userDtoList) throws DocumentException {
+	private static void createTableForUser(Document document, UserDto userDto) throws DocumentException {
 		Paragraph paragraph = new Paragraph();
 		
 		PdfPTable table1 = new PdfPTable(2);
@@ -169,7 +169,7 @@ public class PdfReportService {
 		Paragraph p1 = new Paragraph();
 		
 		String line1 = "UserId" + "\n";                     
-		String line2 = userDtoList.get(0).getEmail() + "\n";
+		String line2 = userDto.getEmail() + "\n";
 		
 		Phrase ph1 = new Phrase(line1, smallBold);
 		Phrase ph2 = new Phrase(line2, catFont);
@@ -184,7 +184,7 @@ public class PdfReportService {
 		Paragraph p2 = new Paragraph();
 		
 		String line3 = "Phone Number" + "\n";                     
-		String line4 = userDtoList.get(0).getPhoneNumber() + "\n";
+		String line4 = userDto.getPhoneNumber() + "\n";
 		
 		Phrase ph3 = new Phrase(line3, smallBold);
 		Phrase ph4 = new Phrase(line4, catFont);

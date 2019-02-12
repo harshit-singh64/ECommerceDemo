@@ -53,7 +53,7 @@ public class JwtSecurtiyConfig extends WebSecurityConfigurerAdapter {
 		.authorizeRequests()
 			.antMatchers("/signup", "/login","/token/decode").permitAll()
 			.antMatchers("/api/user").hasAuthority("ADMIN")
-			.antMatchers("/user/{id}").hasAnyAuthority("ADMIN","USER")
+			.antMatchers("/api/user/{id}","/api/pdf","/api/pdf/{id}").hasAnyAuthority("ADMIN","USER")
 			.and()
 			.authorizeRequests().anyRequest().authenticated()
 		.and()
