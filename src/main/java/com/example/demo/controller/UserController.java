@@ -92,7 +92,7 @@ public class UserController {
 		System.out.println((userId.equals(securityUserDetails.getId()) && name.equals("[USER]")) +">>>>>"+ name.equals("[ADMIN]"));
 		System.out.println(userId+"....."+"?????"+userId.equals(securityUserDetails.getId()));*/
 		
-		if((userId.equals(securityUserDetails.getId()) && name.equals("[USER]")) || name.equals("[ADMIN]")) {
+		if((userId.equals(securityUserDetails.getId()) && name.equals("[USER]")) || (name.equals("[ADMIN]"))) {
 			return new ResponseEntity<>(userService.displayById(userId), HttpStatus.OK);
 		}
 		else {

@@ -9,9 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.exception.CustomException;
@@ -83,6 +81,7 @@ public class SecurityAuthenticationProvider extends AbstractUserDetailsAuthentic
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("error in getting username form token>>>>>"+usernameFromToken);
+					//request.setAttribute("expired", ex.getMessage());
 					//throw new CustomException();
 					}
 			return userDetails;

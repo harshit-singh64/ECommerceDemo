@@ -8716,3 +8716,10 @@ java.lang.IllegalArgumentException: retrieveUser returned null - a violation of 
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-8.5.34.jar:8.5.34]
 	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
 
+2019-02-12 17:52:03.766  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2019-02-12 17:52:03.767  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] ConfigServletWebServerApplicationContext : Closing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@481a996b: startup date [Tue Feb 12 17:46:03 IST 2019]; root of context hierarchy
+2019-02-12 17:52:03.770  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2019-02-12 17:52:03.771  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans
+2019-02-12 17:52:03.773  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2019-02-12 17:52:03.774  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2019-02-12 17:52:03.777  INFO 7188 --- [RMI TCP Connection(2)-172.18.73.11] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
